@@ -4,7 +4,7 @@
 
 ## これは何？
 
-- `skills/findy-hackathon/` — エージェントに入れると、何を作るか・Cloudflareを使うか・デプロイするかを一緒に決め、 最適な既存スキルとスターターを案内して公開まで伴走してくれるスキルです。
+- `skills/findy-hackathon/` — エージェントに入れると、作りたいものに合わせて（Cloudflareを使うか、AIを足すか、デプロイするか）最適な既存スキルとスターターを案内し、公開まで伴走してくれるスキルです。決め打ちは求めず、走りながら決められます。
 
 ## 前提
 
@@ -57,7 +57,3 @@ npx skills add cloudflare/skills --skill cloudflare --skill wrangler --skill wor
 - 勉強会・発表スライド: <https://workshop.yusuke.run/>
 - Cloudflare 公式スキル: <https://github.com/cloudflare/skills>
 - Hono スキル: <https://github.com/yusukebe/hono-skill>
-
-## ライセンス
-
-MIT
