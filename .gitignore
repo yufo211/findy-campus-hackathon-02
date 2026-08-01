@@ -31,3 +31,11 @@ lerna-debug.log*
 
 # misc
 .DS_Store
+
+# local agent settings
+.claude/settings.local.json
+
+# skills are installed by postinstall (scripts/setup-skills.mjs), not committed
+.agents/
+.claude/skills/
+skills-lock.json

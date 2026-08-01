@@ -54,29 +54,28 @@ metadata:
 
 ## 2. 始め方（Cloudflareを使う場合）
 
-自分でディレクトリを作って一から組むより、万能スターターを degit して、そこにスキルを足すのが速い。AIを使わないふつうのWebアプリでも、これで始めてよい（Agents SDK の依存が入っていても害はない）。
+自分でディレクトリを作って一から組むより、全部入りスターターを degit するのが速い。AIを使わないふつうのWebアプリでも、これで始めてよい（Agents SDK の依存が入っていても害はない）。
 
 1. スターターを取得して動かす（Hono + Vite + React + Agents SDK の全部入り）
 
    ```sh
-   npx degit yusukebe/hono-agents-starter my-app
+   npx degit yusukebe/findy-campus-hackathon-02 my-app
    cd my-app && npm install && npm run dev
    ```
 
-2. このプロジェクトに必要なスキルを入れる（`--skill` で絞る。後から足してもよい）
+2. スキル一式は `npm run setup:skills` で入れる（`.agents/skills/` と `.claude/skills/` にインストールされる）。
+   このスキル（findy-hackathon）のほか、`hono` / `cloudflare` / `wrangler` / `workers-best-practices` /
+   `agents-sdk` / `durable-objects` が導入される。このスキルが読めているなら導入済みなので案内は不要。
+   入れ直したいときも同じコマンドでよい。
 
-   ```sh
-   npx skills add yusukebe/hono-skill
-   npx skills add cloudflare/skills --skill cloudflare --skill wrangler --skill workers-best-practices --skill agents-sdk
-   ```
+3. あとは作りたいものに合わせて「3. やりたい形」を参照しながら進める。デプロイ前に `wrangler.jsonc` の
+   `name` を自分のアプリ名に変えるよう促す（公開URLの名前になる）。
 
-3. あとは作りたいものに合わせて「3. やりたい形」を参照しながら進める。
+> 追加のスキルが必要になったら `npx skills add` で後から足せる
+> （例: `npx skills add cloudflare/skills --skill sandbox-sdk`）。
+> `--list` でリポジトリ内のスキル一覧を確認できる。
 
-> `npx skills add <repo>` はそのリポジトリ内の `SKILL.md` を、エージェントのスキルディレクトリ
-> （`.claude/skills/` など）に取り込む。`--list` で一覧を確認し、使うものだけ `--skill` で選ぶ。
-> 必要になったら後から足せばよい（例: `--skill durable-objects`）。
-
-Cloudflareを使わない場合は好きな環境でOK。ただしテーマは「公開」なので、最後に公開手段を一緒に考える。Honoを使うなら上のスキル（`hono` / `cloudflare`）がそのまま役立つ。
+Cloudflareを使わない場合は好きな環境でOK。ただしテーマは「公開」なので、最後に公開手段を一緒に考える。Honoを使うなら同梱スキル（`hono` / `cloudflare`）がそのまま役立つ。
 
 ---
 
@@ -101,7 +100,7 @@ Cloudflare Agents SDK を活かす。入力チャンネルは基本はチャッ�
 - 永続化 — Agent 内蔵のストレージ／SQL。
 - 必要に応じて MCP・human-in-the-loop・Workflows なども。
 
-お手本（最小実例）: `yusukebe/memo2task` —「メモを書くとAIがタスク化し、時間が来たら通知」。Workers AIでの解釈 / `setState` / `this.schedule()` の3機能で成立。形を掴むのに最適。参考: `yusukebe/agent-examples`。
+お手本（最小実例）: `yusukebe/memo2task` —「メモを書くとAIがタスク化し、時間が来たら通知」。Workers AIでの解釈 / `setState` / `this.schedule()` の3機能で成立。形を掴むのに最適。参考: `yusukebe/agents-examples`。
 
 ### プラスα: Cloudflareのプロダクトを活かす
 
@@ -132,7 +131,7 @@ Cloudflare Agents SDK を活かす。入力チャンネルは基本はチャッ�
 ```
 
 ```ts
-const res = await env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
+const res = await env.AI.run('@cf/meta/llama-3.2-3b-instruct', {
   messages: [{ role: 'user', content: 'こんにちは' }]
 })
 ```
@@ -194,9 +193,9 @@ npm run deploy          # = wrangler deploy。完了するとURLが出る
 
 ## 参照リンク
 
-- ハッカソン: <https://www.craftstadium.com/en/hackathon/findy-campus-hackathon>
-- スターター（全部入り）: <https://github.com/yusukebe/hono-agents-starter>
-- 最小エージェント例: <https://github.com/yusukebe/memo2task> / 実装例集: <https://github.com/yusukebe/agent-examples>
+- ハッカソン: <https://www.craftstadium.com/hackathon/findy-campus-hackathon-202608>
+- スターター（このリポジトリ・全部入り）: <https://github.com/yusukebe/findy-campus-hackathon-02>（ベース: <https://github.com/yusukebe/hono-agents-starter>）
+- 最小エージェント例: <https://github.com/yusukebe/memo2task> / 実装例集: <https://github.com/yusukebe/agents-examples>
 - Cloudflare 公式スキル: <https://github.com/cloudflare/skills>
 - Hono スキル: <https://github.com/yusukebe/hono-skill> / yusukebe の skills カタログ: <https://github.com/yusukebe/skills>（<https://skills.yusuke.run>）
 - Cloudflare Workers ドキュメント: <https://developers.cloudflare.com/workers/>
