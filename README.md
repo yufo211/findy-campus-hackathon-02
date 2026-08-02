@@ -5,14 +5,20 @@
 ## 始め方
 
 ```sh
-npx degit yusukebe/findy-campus-hackathon-02 my-app
-cd my-app && npm install && npm run dev
+npx degit yusukebe/findy-campus-hackathon-02 my-hackathon-app
+cd my-hackathon-app && npm install
 ```
 
 コーディングエージェントを使うなら、スキル一式を入れます（1コマンド）。
 
 ```sh
 npm run setup:skills
+```
+
+ローカルで動かすには：
+
+```sh
+npm run dev
 ```
 
 あとはこのディレクトリでコーディングエージェントを起動して、「ハッカソンのアプリを作りたい」と伝えれば、伴走スキルが選択肢を踏まえて進めてくれます。

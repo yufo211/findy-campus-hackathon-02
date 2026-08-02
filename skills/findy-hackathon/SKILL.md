@@ -59,8 +59,9 @@ metadata:
 1. スターターを取得して動かす（Hono + Vite + React + Agents SDK の全部入り）
 
    ```sh
-   npx degit yusukebe/findy-campus-hackathon-02 my-app
-   cd my-app && npm install && npm run dev
+   npx degit yusukebe/findy-campus-hackathon-02 my-hackathon-app
+   cd my-hackathon-app && npm install
+   npm run dev
    ```
 
 2. スキル一式は `npm run setup:skills` で入れる（`.agents/skills/` と `.claude/skills/` にインストールされる）。
