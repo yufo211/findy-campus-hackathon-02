@@ -1,13 +1,25 @@
 import { Hono } from 'hono'
-import { agentsMiddleware } from 'hono-agents'
 import { renderToReadableStream } from 'react-dom/server'
 import { Script, Link, ViteClient, ReactRefresh } from 'vite-ssr-components/react'
-export { LobbyAgent } from './agents/lobby'
-export { RoomAgent } from './agents/room'
+import { generateAiAnswers } from './game/ai'
 
 const app = new Hono<{ Bindings: CloudflareBindings }>()
 
-app.use('*', agentsMiddleware())
+/**
+ * サーバーの仕事はこれだけ。お題を受け取って3モデル分の回答を返す。
+ * 人間の回答は端末から出さない（この画面をみんなで覗き込む遊びなので、
+ * わざわざサーバーに往復させる意味がない）。
+ */
+app.post('/api/ai-answers', async (c) => {
+  const body = await c.req.json<{ topic?: string }>().catch(() => ({ topic: undefined }))
+  const topic = body.topic?.trim()
+  if (!topic) {
+    return c.json({ error: 'topic is required' }, 400)
+  }
+
+  const answers = await generateAiAnswers(c.env.AI, topic.slice(0, 200))
+  return c.json({ answers })
+})
 
 app.get('/', async (c) => {
   c.header('Content-Type', 'text/html')
@@ -17,7 +29,7 @@ app.get('/', async (c) => {
         <head>
           <meta charSet="utf-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
-          <title>ニンゲンかAIか — 大喜利</title>
+          <title>大喜利人狼</title>
           <ViteClient />
           <ReactRefresh />
           <Script src="/src/client/index.tsx" />
