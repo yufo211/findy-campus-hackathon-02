@@ -1,0 +1,390 @@
+:root {
+  color: #1b1f23;
+  background: #f5f2ea;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  background:
+    linear-gradient(120deg, rgba(33, 120, 106, 0.12), transparent 34%),
+    linear-gradient(250deg, rgba(214, 78, 62, 0.16), transparent 38%), #f5f2ea;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  min-height: 42px;
+  border: 1px solid #1f2926;
+  border-radius: 7px;
+  color: #16211f;
+  background: #fffdf7;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #f0e7d2;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #c8beb0;
+  border-radius: 7px;
+  color: #18221f;
+  background: #fffdf8;
+}
+
+input,
+select {
+  height: 42px;
+  padding: 0 12px;
+}
+
+textarea {
+  min-height: 116px;
+  resize: vertical;
+  padding: 12px;
+  line-height: 1.5;
+}
+
+.app-shell {
+  display: grid;
+  grid-template-columns: minmax(240px, 330px) minmax(0, 1fr);
+  gap: 20px;
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 24px 0;
+}
+
+.room-panel {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  min-height: calc(100vh - 48px);
+  padding: 20px;
+  border-right: 1px solid rgba(31, 41, 38, 0.18);
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+  color: #68736d;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 4px;
+  font-size: clamp(2.1rem, 5vw, 4.4rem);
+  line-height: 0.95;
+}
+
+h2 {
+  margin-bottom: 18px;
+  font-size: clamp(1.8rem, 3.2vw, 3.4rem);
+  line-height: 1.05;
+}
+
+.primary-button {
+  border-color: #0c5b4f;
+  color: #fff;
+  background: #0c6b5c;
+  font-weight: 800;
+}
+
+.primary-button:hover {
+  background: #084f45;
+}
+
+.share-box,
+.join-row {
+  display: grid;
+  gap: 8px;
+}
+
+.share-box {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+
+.join-row {
+  grid-template-columns: minmax(0, 1fr) 84px;
+}
+
+.room-badge {
+  display: inline-grid;
+  align-items: center;
+  min-height: 42px;
+  padding: 0 10px;
+  border-radius: 7px;
+  color: #fff;
+  background: #d04d39;
+  font-weight: 900;
+}
+
+.game-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 290px;
+  gap: 20px;
+}
+
+.play-surface {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+  min-height: calc(100vh - 48px);
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  padding: 4px 0;
+}
+
+.segmented {
+  display: inline-grid;
+  grid-template-columns: repeat(3, minmax(72px, 1fr));
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid #c8beb0;
+  border-radius: 8px;
+  background: rgba(255, 253, 248, 0.72);
+}
+
+.segmented button {
+  min-height: 34px;
+  border: 0;
+  background: transparent;
+}
+
+.segmented button.active {
+  color: #fff;
+  background: #1f2926;
+}
+
+.timer {
+  min-width: 74px;
+  padding: 8px 12px;
+  border-radius: 7px;
+  color: #fff;
+  background: #1f2926;
+  font-weight: 900;
+  text-align: center;
+}
+
+.prompt-box,
+.answer-composer,
+.role-card,
+.players-panel,
+.round-panel {
+  border: 1px solid rgba(31, 41, 38, 0.16);
+  border-radius: 8px;
+  background: rgba(255, 253, 248, 0.78);
+}
+
+.prompt-box {
+  padding: 22px;
+}
+
+.answer-composer {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+}
+
+.composer-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.composer-footer span {
+  color: #68736d;
+  font-weight: 800;
+}
+
+.answers-list {
+  display: grid;
+  gap: 10px;
+}
+
+.answer-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 54px;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 14px 14px 16px;
+  border-left: 5px solid #d04d39;
+  border-radius: 8px;
+  background: #fffdf8;
+  box-shadow: 0 10px 28px rgba(33, 31, 26, 0.08);
+}
+
+.answer-card p {
+  margin-bottom: 0;
+  line-height: 1.45;
+}
+
+.player-name {
+  display: block;
+  margin-bottom: 4px;
+  color: #68736d;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.answer-card button {
+  width: 46px;
+  min-height: 46px;
+  border-radius: 50%;
+  font-weight: 900;
+}
+
+.side-panel {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+}
+
+.role-card,
+.players-panel,
+.round-panel {
+  padding: 16px;
+}
+
+.role-toggle {
+  width: 100%;
+  min-height: 90px;
+  border-color: #d04d39;
+  color: #fff;
+  background: #d04d39;
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.role-toggle:hover {
+  background: #b83d2b;
+}
+
+.role-note {
+  margin: 12px 0 0;
+  color: #59645f;
+  line-height: 1.45;
+}
+
+.panel-heading,
+.player-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.player-row {
+  min-height: 38px;
+  border-top: 1px solid #e5dccc;
+}
+
+.player-row small {
+  color: #0c6b5c;
+  font-weight: 800;
+}
+
+.round-panel strong {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 1.4rem;
+}
+
+.progress-bar {
+  overflow: hidden;
+  height: 10px;
+  border-radius: 999px;
+  background: #e4dac8;
+}
+
+.progress-bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #0c6b5c;
+}
+
+@media (max-width: 940px) {
+  .app-shell,
+  .game-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .room-panel,
+  .play-surface {
+    min-height: 0;
+  }
+
+  .room-panel {
+    border-right: 0;
+    border-bottom: 1px solid rgba(31, 41, 38, 0.18);
+  }
+}
+
+@media (max-width: 560px) {
+  .app-shell {
+    width: min(100% - 20px, 1180px);
+    padding: 10px 0;
+  }
+
+  .room-panel,
+  .prompt-box,
+  .answer-composer,
+  .role-card,
+  .players-panel,
+  .round-panel {
+    padding: 14px;
+  }
+
+  .share-box,
+  .join-row,
+  .toolbar,
+  .composer-footer {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .toolbar,
+  .composer-footer {
+    display: grid;
+  }
+
+  .segmented {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .answer-card {
+    grid-template-columns: minmax(0, 1fr) 48px;
+  }
+}

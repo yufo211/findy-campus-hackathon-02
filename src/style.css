@@ -1,13 +1,15 @@
 :root {
-  --bg: #0f1020;
-  --card: #1a1b33;
-  --card-2: #23244170;
-  --line: #34365e;
-  --fg: #eceaff;
-  --muted: #9b9ac4;
-  --accent: #ffd23f;
-  --ai: #ff5c8a;
-  --ok: #4ade80;
+  --bg: #f6fbff;
+  --card: #ffffff;
+  --card-2: #edf6ff;
+  --line: #d9e5ef;
+  --fg: #172033;
+  --muted: #5d6a7c;
+  --accent: #ffc83d;
+  --accent-strong: #966200;
+  --ai: #d94b75;
+  --ok: #2f9a55;
+  --shadow: 0 14px 36px rgba(27, 52, 78, 0.12);
 }
 
 * {
@@ -16,7 +18,9 @@
 
 body {
   margin: 0;
-  background: radial-gradient(1200px 600px at 50% -10%, #2a2b55, var(--bg));
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(246, 251, 255, 0.72)),
+    linear-gradient(135deg, #e7f5ff 0%, #ffffff 48%, #fff4df 100%);
   color: var(--fg);
   font-family:
     'Hiragino Sans', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -34,9 +38,10 @@ body {
 .card {
   background: var(--card);
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: 8px;
   padding: 20px;
   margin-bottom: 16px;
+  box-shadow: var(--shadow);
 }
 .card.center {
   text-align: center;
@@ -47,7 +52,7 @@ body {
   margin: 0 0 12px;
 }
 .title .accent {
-  color: var(--accent);
+  color: var(--accent-strong);
 }
 
 .lead {
@@ -61,7 +66,7 @@ body {
   color: var(--fg);
 }
 .phase-title strong {
-  color: var(--accent);
+  color: var(--accent-strong);
 }
 
 .field {
@@ -88,13 +93,13 @@ input {
   padding: 14px;
   font-size: 16px; /* iOSで入力時にズームさせない */
   color: var(--fg);
-  background: #12132a;
+  background: #ffffff;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 8px;
   font-family: inherit;
 }
 input:focus {
-  outline: 2px solid var(--accent);
+  outline: 2px solid #f7c948;
   outline-offset: -1px;
 }
 
@@ -102,15 +107,16 @@ input:focus {
   padding: 14px 20px;
   font-size: 16px;
   font-weight: 700;
-  border-radius: 10px;
+  border-radius: 8px;
   border: 1px solid transparent;
   cursor: pointer;
   font-family: inherit;
   min-height: 48px;
 }
 .btn.primary {
-  background: var(--accent);
-  color: #241f00;
+  background: #f6c343;
+  color: #2f2400;
+  box-shadow: 0 6px 0 #c98d12;
 }
 .btn.big {
   width: 100%;
@@ -122,7 +128,7 @@ input:focus {
   cursor: not-allowed;
 }
 .btn.ghost {
-  background: transparent;
+  background: #ffffff;
   color: var(--muted);
   border-color: var(--line);
 }
@@ -151,7 +157,7 @@ input:focus {
   font-size: 15px;
 }
 .handoff-lead strong {
-  color: var(--ai);
+  color: #b9345f;
 }
 .handoff-icon {
   font-size: 56px;
@@ -160,12 +166,13 @@ input:focus {
 
 /* --- お題 --- */
 .topic {
-  background: linear-gradient(135deg, #2b2c57, #1a1b33);
+  background: linear-gradient(135deg, #fff3bd, #ffffff 56%, #e7f7ee);
 }
 .topic .label {
   font-size: 12px;
-  color: var(--accent);
+  color: var(--accent-strong);
   letter-spacing: 0.2em;
+  font-weight: 800;
 }
 .topic h2 {
   margin: 8px 0 0;
@@ -189,7 +196,7 @@ input:focus {
   width: 44px;
   height: 44px;
   margin: 8px auto 16px;
-  border: 4px solid var(--line);
+  border: 4px solid #deebf5;
   border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 0.9s linear infinite;
@@ -232,7 +239,7 @@ input:focus {
   color: var(--fg);
   background: var(--card-2);
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 8px;
   cursor: pointer;
   min-height: 56px;
 }
@@ -240,18 +247,19 @@ input:focus {
   cursor: default;
 }
 .answer:not(.static):active {
-  border-color: var(--accent);
+  border-color: var(--accent-strong);
 }
 .answer.picked {
-  border-color: var(--accent);
+  border-color: var(--accent-strong);
+  background: #fff4ca;
 }
 .answer.is-human {
   border-color: var(--ok);
-  background: #14301f;
+  background: #e9f8ed;
 }
 .answer .key {
   font-weight: 800;
-  color: var(--accent);
+  color: var(--accent-strong);
   font-size: 18px;
 }
 .answer .text {
@@ -263,7 +271,7 @@ input:focus {
   font-size: 11px;
   padding: 4px 8px;
   border-radius: 999px;
-  background: var(--line);
+  background: #deebf5;
   color: var(--muted);
   white-space: nowrap;
 }
@@ -273,7 +281,7 @@ input:focus {
 }
 .tag.human {
   background: var(--ok);
-  color: #06210f;
+  color: #ffffff;
 }
 
 .voters {
@@ -296,20 +304,20 @@ input:focus {
 /* --- 答え合わせ --- */
 .verdict {
   padding: 16px;
-  border-radius: 10px;
+  border-radius: 8px;
   font-weight: 700;
   margin-bottom: 16px;
   line-height: 1.7;
 }
 .verdict.win {
-  background: #14301f;
+  background: #e9f8ed;
   border: 1px solid var(--ok);
-  color: var(--ok);
+  color: #20713d;
 }
 .verdict.lose {
-  background: #3a1f34;
+  background: #fff0f4;
   border: 1px solid var(--ai);
-  color: var(--ai);
+  color: #b9345f;
 }
 
 .actions {
