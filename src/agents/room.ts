@@ -234,7 +234,7 @@ export class RoomAgent extends Agent<CloudflareBindings, RoomState> {
     }))
     const votes = voteRows.map((v) => ({ voterId: v.voter, voterName: nameOf(v.voter), key: v.key }))
 
-    // 採点: AIを見抜いたら +2 / 人間なのにAI認定されたら +1（AIより機械的だった称号）
+    // 採点: AIを見抜いたら +1 / 人間なのにAI認定されたら +2（AIより機械的だった称号）
     const gains = new Map<string, { delta: number; reasons: string[] }>()
     for (const p of this.state.players) gains.set(p.id, { delta: 0, reasons: [] })
 
@@ -242,16 +242,16 @@ export class RoomAgent extends Agent<CloudflareBindings, RoomState> {
       if (v.key === aiKey) {
         const g = gains.get(v.voterId)
         if (g) {
-          g.delta += 2
-          g.reasons.push('AIを見抜いた +2')
+          g.delta += 1
+          g.reasons.push('AIを見抜いた +1')
         }
       } else {
         const victim = authors.find((a) => a.key === v.key)
         if (victim?.playerId) {
           const g = gains.get(victim.playerId)
           if (g) {
-            g.delta += 1
-            g.reasons.push(`${v.voterName} にAI認定された +1`)
+            g.delta += 2
+            g.reasons.push(`${v.voterName} にAI認定された +2`)
           }
         }
       }

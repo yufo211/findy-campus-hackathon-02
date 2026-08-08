@@ -85,8 +85,8 @@ export function Lobby({ playerId, onMatched }: Props) {
       )}
 
       <ul className="rules">
-        <li>AIを正しく見抜いた → +2点</li>
-        <li>人間なのに他人からAI認定された → +1点</li>
+        <li>AIを正しく見抜いた → +1点</li>
+        <li>人間なのに他人からAI認定された → +2点</li>
       </ul>
     </div>
   )
