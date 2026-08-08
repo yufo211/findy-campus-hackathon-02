@@ -180,6 +180,15 @@ input:focus {
   line-height: 1.7;
 }
 
+.phase-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.phase-head .phase-title {
+  flex: 1;
+}
+
 .answer-input {
   margin-bottom: 12px;
 }
@@ -291,6 +300,10 @@ input:focus {
 }
 .timer.hot {
   color: var(--ai);
+}
+.timer.small {
+  font-size: 24px;
+  margin: 0;
 }
 
 /* --- 答え合わせ --- */

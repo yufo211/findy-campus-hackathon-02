@@ -51,18 +51,28 @@ Cloudflare Workers (Hono)  ── ステートレス
 
 `src/game/ai.ts` の `AI_MODELS`。ベンダーを分散させると正体開示が盛り上がります。
 
-| モデル | 備考 |
+**Workers AI に日本語特化の生成モデルはありません**（`@cf/pfnet/plamo-embedding-1b` は Preferred Networks の日本語モデルですが埋め込み専用で、生成には使えません）。そのため多言語モデルを実際に大喜利へ回答させて比較しています。
+
+| モデル | 応答 | 備考 |
+| --- | --- | --- |
+| `@cf/meta/llama-3.3-70b-instruct-fp8-fast` | 0.5〜1.7s | `response` に本文。回答の幅は広いが、たまに日本語が崩れる |
+| `@cf/nvidia/nemotron-3-120b-a12b` | 3.7〜13s | 日本語が最も自然で、毎回違う回答を返す。推論モデルなので `max_tokens: 1500` |
+| `@cf/openai/gpt-oss-20b` | 1〜3s | **`response` を持たず `choices[0].message.content` にだけ入る**。推論トークンを消費するので `max_tokens: 1500` |
+
+選定時に落としたモデル:
+
+| モデル | 落とした理由 |
 | --- | --- |
-| `@cf/meta/llama-3.3-70b-instruct-fp8-fast` | 応答が速い。`response` に本文が入る |
-| `@cf/mistralai/mistral-small-3.1-24b-instruct` | 同上。たまに日本語が崩れるのが逆に人間っぽい |
-| `@cf/openai/gpt-oss-20b` | **`response` を持たず `choices[0].message.content` にだけ入る**。推論トークンを消費するので `max_tokens` を大きめ(1500)に取る |
-
-選定時に落としたモデル（どちらも推論に全トークンを使い切って本文が空になる）:
-
-- `@cf/google/gemma-4-26b-a4b-it` — `max_tokens: 1200` でも `finish_reason: "length"` で `content` が空
-- `@cf/zai-org/glm-4.7-flash` — 同上
+| `@cf/mistralai/mistral-small-3.1-24b-instruct` | 「着巻きおにぎり」「ついに鳴門巻きがやってきたね」など日本語が壊れる |
+| `@cf/meta/llama-4-scout-17b-16e-instruct` | 日本語は自然で最速(0.5s)だが、**同じお題にほぼ同じ回答**を返す（seedを振っても5回中4回同一）。繰り返し遊ぶと「これはAI」と覚えられてしまう |
+| `@cf/google/gemma-4-26b-a4b-it` | 推論に全トークンを使い切り、`max_tokens: 1200` でも `finish_reason: "length"` で本文が空 |
+| `@cf/zai-org/glm-4.7-flash` | 同上 |
+| `@cf/qwen/qwq-32b` | 1回23秒 |
+| `@cf/moonshotai/kimi-k2.5` / `@cf/zai-org/glm-5.2` | Workers 無料プランでは使えない（エラー5035） |
 
 生成が空だったモデルは1度だけリトライします。定型のフォールバック文が混ざると、それ自体がゲームの手がかりになってしまうためです。
+
+モデルを差し替えるときは、`{ messages }` を受けて `response` か `choices[0].message.content` のどちらかに本文を返すこと、そして**推論モデルなら `max_tokens` を大きく取ること**を確認してください。埋め込みモデルを指定すると毎回エラーになり、フォールバック文が出続けます。
 
 AIのプロンプトとモデルIDはサーバー側に閉じていて、クライアントバンドルには入りません。
 

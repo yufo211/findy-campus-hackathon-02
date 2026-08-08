@@ -1,6 +1,27 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { humanKeyOf } from '../game/round'
-import { AI_COUNT, DISCUSSION_SECONDS, MAX_ANSWER_LENGTH, type Answer } from '../game/types'
+import {
+  AI_COUNT,
+  DISCUSSION_SECONDS,
+  MAX_ANSWER_LENGTH,
+  WRITE_SECONDS,
+  type Answer
+} from '../game/types'
+import { isSubmitEnter } from './keys'
+
+/** 0で止まるだけのカウントダウン。進行は止めない */
+function useCountdown(seconds: number) {
+  const [left, setLeft] = useState(seconds)
+  useEffect(() => {
+    const timer = setInterval(() => setLeft((v) => Math.max(0, v - 1)), 1000)
+    return () => clearInterval(timer)
+  }, [])
+  return left
+}
+
+function formatTime(sec: number) {
+  return `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`
+}
 
 /* --- 1. 遊び方 --- */
 
@@ -60,6 +81,10 @@ export function WritingScreen({
   onSubmit: () => void
   onReroll: () => void
 }) {
+  const left = useCountdown(WRITE_SECONDS)
+  // 日本語変換中かどうか。再レンダリングを挟まずイベント時点の値を読みたいのでrefで持つ
+  const composing = useRef(false)
+
   return (
     <>
       <div className="card topic">
@@ -71,8 +96,11 @@ export function WritingScreen({
       </div>
 
       <div className="card">
-        <div className="phase-title">
-          <strong>AIが書きそうな回答</strong>を入力してください
+        <div className="phase-head">
+          <div className="phase-title">
+            <strong>AIが書きそうな回答</strong>を入力してください
+          </div>
+          <div className={left === 0 ? 'timer small hot' : 'timer small'}>{formatTime(left)}</div>
         </div>
         <input
           className="answer-input"
@@ -80,8 +108,14 @@ export function WritingScreen({
           maxLength={MAX_ANSWER_LENGTH}
           placeholder={`AIっぽい回答（${MAX_ANSWER_LENGTH}文字まで）`}
           onChange={(e) => onChange(e.target.value)}
+          onCompositionStart={() => {
+            composing.current = true
+          }}
+          onCompositionEnd={() => {
+            composing.current = false
+          }}
           onKeyDown={(e) => {
-            if (e.key === 'Enter') onSubmit()
+            if (isSubmitEnter(e, composing.current)) onSubmit()
           }}
           autoFocus
         />
@@ -121,15 +155,6 @@ export function ErrorScreen({ message, onRetry }: { message: string; onRetry: ()
 
 /* --- 5. 回答を並べて話し合い（オフライン） --- */
 
-function useCountdown(seconds: number) {
-  const [left, setLeft] = useState(seconds)
-  useEffect(() => {
-    const timer = setInterval(() => setLeft((v) => Math.max(0, v - 1)), 1000)
-    return () => clearInterval(timer)
-  }, [])
-  return left
-}
-
 export function AnswersScreen({
   topic,
   answers,
@@ -140,8 +165,6 @@ export function AnswersScreen({
   onDone: () => void
 }) {
   const left = useCountdown(DISCUSSION_SECONDS)
-  const mm = Math.floor(left / 60)
-  const ss = String(left % 60).padStart(2, '0')
 
   return (
     <>
@@ -168,9 +191,7 @@ export function AnswersScreen({
       </div>
 
       <div className="card center">
-        <div className={left === 0 ? 'timer hot' : 'timer'}>
-          {mm}:{ss}
-        </div>
+        <div className={left === 0 ? 'timer hot' : 'timer'}>{formatTime(left)}</div>
         <button className="btn primary big" onClick={onDone}>
           結論が出た
         </button>

@@ -1,7 +1,11 @@
 /** 回答を生成するAIモデルの数。実体（モデルIDとプロンプト）はサーバー側の src/game/ai.ts が持つ */
 export const AI_COUNT = 3
 
-/** 話し合いの目安時間。カウントダウンを表示するだけで、進行を強制はしない */
+/**
+ * 目安時間。どちらもカウントダウンを表示するだけで、0になっても何も起きない
+ * （進行はボタンで決める）
+ */
+export const WRITE_SECONDS = 60
 export const DISCUSSION_SECONDS = 180
 
 export const MAX_ANSWER_LENGTH = 40
