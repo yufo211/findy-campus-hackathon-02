@@ -1,80 +1,85 @@
-# Findy Campus Hackathon #2 — 全部入りスターター
+# ニンゲンかAIか — 大喜利
 
-[Findy Campus Hackathon #2](https://www.craftstadium.com/hackathon/findy-campus-hackathon-202608)（2026/8/8開催）の参加者向けスターターです。アプリの雛形と、コーディングエージェント用のスキルが最初から全部入っています。
+人間同士がマッチングして大喜利をする。**そこにAIが1体しれっと混ざっていて、最後に「どれがAIか」を当てる。**
 
-## 始め方
+Cloudflare Workers + Durable Objects + Workers AI で動く、リアルタイム対戦アプリの PoC です。
 
-```sh
-npx degit yusukebe/findy-campus-hackathon-02 my-hackathon-app
-cd my-hackathon-app && npm install
-```
+## 遊び方
 
-コーディングエージェントを使うなら、スキル一式を入れます（1コマンド）。
+1. ニックネームを入れて「マッチングを開始」
+2. 2人揃うとルームが立ち、お題が出る（60秒で回答）
+3. 回答が匿名・シャッフルされて並ぶ。**この中の1つがAIの回答**（45秒で投票）
+4. 正体開示と採点
 
-```sh
-npm run setup:skills
-```
+| ルール | 点 |
+| --- | --- |
+| AIを正しく見抜いた | +2 |
+| 人間なのに他人からAI認定された | +1 |
 
-ローカルで動かすには：
+> 1人で試すときは、同じページを **2つのタブ** で開いてください。プレイヤーIDは `sessionStorage` に持つので、タブごとに別人として扱われます。
 
-```sh
-npm run dev
-```
-
-あとはこのディレクトリでコーディングエージェントを起動して、「ハッカソンのアプリを作りたい」と伝えれば、伴走スキルが選択肢を踏まえて進めてくれます。
-
-## 何が入っているの？
-
-### アプリの雛形（Hono + Vite + React + Agents SDK）
-
-[hono-agents-starter](https://github.com/yusukebe/hono-agents-starter) ベースの全部入り構成。AIを使わないふつうのWebアプリでも、このままでOKです。
-
-- `npm run dev` — ローカル開発サーバー
-- `npm run deploy` — Cloudflareへデプロイ（要 `npx wrangler login`）
-- `npm run cf-typegen` — `wrangler.jsonc` 変更後の型再生成
-
-> デプロイ前に `wrangler.jsonc` の `name`（= 公開URLの名前になる）を自分のアプリ名に変えるのがおすすめです。
-
-### エージェント用スキル（`npm run setup:skills` で取得）
-
-スキルファイル自体はこのリポジトリに同梱していません。`npm run setup:skills` を実行すると、[skills CLI](https://skills.sh) が以下を `.agents/skills/` と `.claude/skills/` にインストールします。Claude Code / Cursor / GitHub Copilot / Gemini CLI / Codex がそのまま読めます。
-
-- `findy-hackathon` — このハッカソンの伴走スキル。アイデア→実装→公開まで案内する
-- `hono` — Hono本体のAPI・ルーティング・ミドルウェアなど
-- `cloudflare` / `wrangler` / `workers-best-practices` / `agents-sdk` / `durable-objects` — Cloudflare公式スキル
-
-入れ直したいときも同じコマンドでOK。ほかのスキルも後から足せます（例: `npx skills add cloudflare/skills --skill sandbox-sdk`）。
-
-## 前提
-
-- Node.js (v20+) — `node -v` で確認
-- コーディングエージェント（強く推奨）— Claude Code / Cursor / GitHub Copilot / Gemini CLI など。無料で使えるものもあります
-- デプロイするなら Cloudflareアカウント（無料枠でOK / Workers AI も無料枠あり）。[こちら](https://www.cloudflare.com/ja-jp/)から登録できます
-
-### コーディングエージェントを持っていない人へ
-
-無料で始めたいなら:
-
-- GitHub Copilot Free — 誰でも無料（月あたりの利用上限あり）。VS Code / JetBrains で使える
-- Cursor — 無料枠ありのAIエディタ
-- Gemini CLI — 無料枠の大きいターミナル系エージェント
-
-Claude Code を使う場合は有料です（Pro / Max、または API 従量課金。新規アカウントに少額の無料クレジットあり）。
-
-## スターターを使わない場合
-
-既存のプロジェクトや好きな環境に、伴走スキルだけ入れることもできます。
+## 動かす
 
 ```sh
-npx skills add yusukebe/findy-campus-hackathon-02
+npm install
+npm run dev     # http://localhost:5173
 ```
 
-## アプリの例
+Workers AI のバインディングはローカル開発でもリモートを叩くので、`npx wrangler login` が必要です。
 
-- memo2task - <https://github.com/yusukebe/memo2task>
+```sh
+npm run deploy  # Cloudflareへ公開
+```
 
-## 関連
+## 構成
 
-- 勉強会・発表スライド: <https://workshop.yusuke.run/findy>
-- Cloudflare 公式スキル: <https://github.com/cloudflare/skills>
-- Hono スキル: <https://github.com/yusukebe/hono-skill>
+```
+ブラウザ (React)
+  │  WebSocket (Agents SDK)
+  ├─→ LobbyAgent   … グローバル単一DO。待機キューを直列化してマッチングを成立させる
+  └─→ RoomAgent    … ルームごとに1DO。ゲーム進行・採点・AI回答の生成をすべて内包
+                        └─→ Workers AI (env.AI)
+```
+
+| レイヤ | 選定 | 理由 |
+| --- | --- | --- |
+| ルーム/進行 | Durable Objects (Agents SDK `Agent`) | 部屋=1インスタンスで状態が単一化される。`setState` が接続中の全クライアントへ自動ブロードキャストされるので、同期処理を自前で書かなくてよい |
+| マッチング | `LobbyAgent`（インスタンス名 `global`） | 待機キューを1箇所に集約。DOはシングルスレッドなので「誰と誰を組ませるか」に競合が起きない |
+| タイマー | `this.schedule()`（DOアラーム） | 全員が切断しても締切が進む。クライアントのタイマーに依存しない |
+| 永続化 | DO内蔵SQLite | PoCではD1不要。状態がDOに閉じる |
+| AI回答 | Workers AI `@cf/meta/llama-3.3-70b-instruct-fp8-fast` | APIキー不要・無料枠あり。バインディング1つで済む |
+
+### 設計上いちばん大事なところ
+
+`setState()` は **接続中の全クライアントにブロードキャストされる**。つまり state に入れた瞬間、全員に見える。
+
+そこで「誰がどの回答を書いたか」「誰がどこへ投票したか」は state に載せず、Durable Object 内の SQLite だけに持つ（`src/agents/room.ts` の `answers` / `votes` テーブル）。state に置くのは *そのフェーズで全員に見せてよい情報だけ* で、正体は `result` フェーズになって初めて `state.reveal` に載る。
+
+サーバー側で弾いているもの（クライアントを信用しない）:
+
+- 自分の回答への投票
+- ルームのプレイヤー以外からの回答・投票
+- フェーズ外の操作
+- `RoomAgent.setup()` は `@callable()` を付けていないので、ブラウザからは呼べない（`LobbyAgent` からの DO RPC 専用）
+
+### ファイル
+
+| パス | 役割 |
+| --- | --- |
+| `src/agents/lobby.ts` | マッチング |
+| `src/agents/room.ts` | ゲーム本体（フェーズ遷移・採点） |
+| `src/game/ai.ts` | AI回答の生成とプロンプト |
+| `src/game/topics.ts` | 固定のお題リスト |
+| `src/game/types.ts` | 公開ステートの型とゲーム定数 |
+| `src/client/` | React UI |
+
+## これから拡張するなら
+
+- **人間が出題する**: お題は `LobbyAgent` が決めて `RoomAgent.setup(players, topic)` に注入する形になっている。`pickTopic()` の代わりに出題者の入力を渡せば、`RoomAgent` 側は変更なしで済む
+- **人数を増やす**: `src/game/types.ts` の `HUMANS_PER_ROOM` を変える。回答キーは `A`〜`F` まで用意済み
+- **AIを複数体にする**: `writeAiAnswer` を複数行インサートに変え、採点を「AIの集合」に対する判定へ広げる
+- **モデルを変える**: `src/game/ai.ts` の `MODEL` 定数。プロンプトは「面白い回答」ではなく「人間だと錯覚させる回答」を狙って書いてある
+
+---
+
+このリポジトリは [Findy Campus Hackathon #2](https://www.craftstadium.com/hackathon/findy-campus-hackathon-202608) のスターター（[hono-agents-starter](https://github.com/yusukebe/hono-agents-starter) ベース）から作られています。エージェント用スキルは `npm run setup:skills` で入れ直せます。
