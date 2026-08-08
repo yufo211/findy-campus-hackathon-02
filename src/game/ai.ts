@@ -12,16 +12,28 @@ export type AiModel = {
 /**
  * 回答を生成する3モデル。ベンダーを分散させると開示のときに盛り上がる。
  *
- * 選定時に落としたモデル（いずれも推論に全トークンを使い切って本文が空になる）:
- *   @cf/google/gemma-4-26b-a4b-it … max_tokens 1200 でも finish_reason: length
- *   @cf/zai-org/glm-4.7-flash     … 同上
+ * 日本語の自然さで選定した。Workers AI に日本語特化の生成モデルは無い
+ * （@cf/pfnet/plamo-embedding-1b は埋め込み専用で生成はできない）ので、
+ * 多言語モデルを実際に大喜利に回答させて比べている。
+ *
+ * 選定時に落としたモデル:
+ *   @cf/mistralai/mistral-small-3.1-24b-instruct … 「着巻きおにぎり」など日本語が壊れる
+ *   @cf/meta/llama-4-scout-17b-16e-instruct      … 日本語は自然で最速(0.5s)だが、同じお題に
+ *                                                  ほぼ同じ回答を返す（seedを振っても5回中4回同一）。
+ *                                                  繰り返し遊ぶと「これはAI」と覚えられてしまう
+ *   @cf/google/gemma-4-26b-a4b-it                … 推論に全トークンを使い切り本文が空
+ *   @cf/zai-org/glm-4.7-flash                    … 同上
+ *   @cf/qwen/qwq-32b                             … 1回23秒かかる
+ *   @cf/moonshotai/kimi-k2.5 / @cf/zai-org/glm-5.2 … Workers 無料プランでは使えない
+ *   @cf/google/gemma-3-12b-it                    … アカウントに利用権限がない
  */
 export const AI_MODELS: AiModel[] = [
   { id: '@cf/meta/llama-3.3-70b-instruct-fp8-fast', label: 'Llama 3.3 70B / Meta', maxTokens: 120 },
+  // nemotron も推論モデル。300では毎回空になったので大きめに取る
   {
-    id: '@cf/mistralai/mistral-small-3.1-24b-instruct',
-    label: 'Mistral Small 3.1 24B / Mistral AI',
-    maxTokens: 120
+    id: '@cf/nvidia/nemotron-3-120b-a12b',
+    label: 'Nemotron 3 120B / NVIDIA',
+    maxTokens: 1500
   },
   // gpt-oss は本文の前に推論トークンを消費する。600 だと稀に本文が空になったので余裕を持たせる
   { id: '@cf/openai/gpt-oss-20b', label: 'gpt-oss 20B / OpenAI', maxTokens: 1500 }
@@ -32,10 +44,11 @@ export const AI_MODELS: AiModel[] = [
  * ここで人間らしさを演出する必要はない。
  * ただし体裁だけは揃えないと、文字数や句読点で人間の回答が一発でバレる。
  */
-const SYSTEM = `あなたは日本の大喜利に回答するAIです。お題に対する回答を1つだけ出してください。
+const SYSTEM = `あなたは日本の大喜利に日本語で回答するAIです。お題に対する回答を1つだけ出してください。
 
 出力の決まり:
 - 回答そのものだけを出力する。説明・前置き・補足・箇条書き・引用符・絵文字は一切つけない
+- 人間が答えそうな内容にする
 - 25文字以内、改行なしの1行
 - 文末に句点（。）をつけない
 - 「面白いですね」「いかがでしょうか」のようなメタな言葉は禁止`
@@ -72,8 +85,8 @@ function sanitize(raw: string): string {
 
 /**
  * モデルによって本文の置き場所が違う。
- *   Llama / Mistral … トップレベルの response（choices にも同じものが入る）
- *   gpt-oss         … choices[0].message.content のみ（response は無い）
+ *   Llama              … トップレベルの response（choices にも同じものが入る）
+ *   gpt-oss / nemotron … choices[0].message.content のみ（response は無い）
  */
 function extractText(res: unknown): string {
   const r = res as {
@@ -115,7 +128,7 @@ async function runAll(ai: Ai, topic: string, models: AiModel[]): Promise<string[
 /**
  * 3モデルを並列で走らせる。
  *
- * 取れなかったモデルは1度だけリトライする。gpt-oss は稀に推論が長引いて本文が空で返るが、
+ * 取れなかったモデルは1度だけリトライする。gpt-oss と nemotron は稀に推論が長引いて本文が空で返るが、
  * 定型のフォールバック文が混ざると「いかにも」な手がかりになってゲームが壊れるため。
  * それでもダメなら重複しないフォールバックで埋める。
  */
