@@ -1,0 +1,4 @@
+interface:
+  display_name: "Ogiri Answer"
+  short_description: "大喜利・ボケ案を短く面白く磨く"
+  default_prompt: "Use $ogiri-answer to create three short, unexpected answers for this ogiri prompt."
