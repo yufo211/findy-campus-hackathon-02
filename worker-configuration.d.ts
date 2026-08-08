@@ -3,13 +3,11 @@
 // Runtime types generated with workerd@1.20260623.1 2026-06-14 nodejs_compat
 interface __BaseEnv_CloudflareBindings {
 	AI: Ai;
-	LobbyAgent: DurableObjectNamespace<import("./src/index").LobbyAgent>;
-	RoomAgent: DurableObjectNamespace<import("./src/index").RoomAgent>;
 }
 declare namespace Cloudflare {
 	interface GlobalProps {
 		mainModule: typeof import("./src/index");
-		durableNamespaces: "LobbyAgent" | "RoomAgent";
+		durableNamespaces: never;
 	}
 	interface Env extends __BaseEnv_CloudflareBindings {}
 }
