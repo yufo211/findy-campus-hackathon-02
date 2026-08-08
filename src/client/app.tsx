@@ -1,11 +1,23 @@
-import { CounterWidget } from './counter'
+import { useCallback, useState } from 'react'
+import { Lobby } from './lobby'
+import { Room } from './room'
+import { getPlayerId } from './identity'
 
 function App() {
+  const [playerId] = useState(getPlayerId)
+  const [roomId, setRoomId] = useState<string | null>(null)
+
+  const onMatched = useCallback((id: string) => setRoomId(id), [])
+  const onExit = useCallback(() => setRoomId(null), [])
+
   return (
-    <div>
-      <h1>Hello!</h1>
-      <CounterWidget />
-    </div>
+    <main className="app">
+      {roomId === null ? (
+        <Lobby playerId={playerId} onMatched={onMatched} />
+      ) : (
+        <Room roomId={roomId} playerId={playerId} onExit={onExit} />
+      )}
+    </main>
   )
 }
 

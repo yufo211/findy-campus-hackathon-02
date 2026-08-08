@@ -1,14 +1,21 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "findy-hackathon-app",
+  "name": "ai-ogiri",
   "main": "src/index.tsx",
   "compatibility_date": "2026-06-14",
   "compatibility_flags": ["nodejs_compat"],
+  "ai": {
+    "binding": "AI"
+  },
   "durable_objects": {
     "bindings": [
       {
-        "name": "CounterAgent",
-        "class_name": "CounterAgent"
+        "name": "LobbyAgent",
+        "class_name": "LobbyAgent"
+      },
+      {
+        "name": "RoomAgent",
+        "class_name": "RoomAgent"
       }
     ]
   },
@@ -16,6 +23,11 @@
     {
       "tag": "v1",
       "new_sqlite_classes": ["CounterAgent"]
+    },
+    {
+      "tag": "v2",
+      "new_sqlite_classes": ["LobbyAgent", "RoomAgent"],
+      "deleted_classes": ["CounterAgent"]
     }
   ]
 }
